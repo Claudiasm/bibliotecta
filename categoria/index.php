@@ -1,0 +1,26 @@
+<?php
+
+require "../configuracion/configuracion.php";
+require "../helpers/funciones.php";
+soloAdmin();
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $nombre = isset($_REQUEST['buscar']) ? $_REQUEST['buscar'] : null;
+    $miConsulta = $miPDO->prepare('SELECT * FROM categoria WHERE nombre LIKE CONCAT("%", :nombre, "%");');
+    $miConsulta->execute([
+        'nombre' => $nombre
+    ]);
+} else {
+    // Prepara SELECT
+    $miConsulta = $miPDO->prepare('SELECT * FROM categoria;');
+    // Ejecuta consulta
+    $miConsulta->execute();
+}
+
+$datos = $miConsulta->fetchAll();
+
+echo $blade -> run("categoria.index", [
+    'datos' => $datos
+]);
+
+?>
